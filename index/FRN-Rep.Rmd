@@ -1,0 +1,3 @@
+#Gibbs Sampler replication {FRN-rep}
+
+The following Gibbs sampler implementation samples from the full conditionals calculated in the previous part. It is intended to confirm the correctnesss of the derivations.

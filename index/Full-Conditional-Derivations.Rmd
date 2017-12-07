@@ -1,0 +1,162 @@
+# Full Conditional Derivations {#deriv}
+
+The following derivations are for the conditionals used in Hoff et al. 2013. The conditionals are derived using general priors in order to allow different priors to be used in code implementation.
+
+##Conditional Distribution for $\beta$
+$y_{i,j}=\beta^Tx_{i,j}+a_i+b_j+\epsilon_{i,j}$
+
+$y_{i,j}-a_i-b_j=\beta^Tx_{i,j}+\epsilon_{i,j}$
+
+Let $\lambda_{i,j}=y_{i,j}-a_i-b_j$
+
+$(\lambda_{i,j}, \lambda_{j,i})|\beta,X \sim N\big(\beta^T(x_{i,j},x_{j,i}),\Sigma_\epsilon \big)$
+
+where we assume $\Sigma_\epsilon$ is known. We cancel out the correlation of each pair $(\lambda_{i,j},\lambda_{j,i})=\lambda^{(i,j)}$
+
+$\lambda=\theta+\Sigma_\epsilon^{1/2}Z$
+
+$\Sigma_\epsilon^{-1/2}\lambda=\Sigma_\epsilon^{-1/2}\theta+\Sigma_\epsilon^{-1/2} \Sigma_\epsilon^{1/2}Z$
+
+$\Sigma_\epsilon^{-1/2}\lambda=\Sigma_\epsilon^{-1/2}\theta+Z$
+
+So now the distribution for each pair $(i,j)$
+
+$\Sigma_\epsilon^{-1/2}\lambda^{(i,j)}|\beta \sim N\big(\Sigma_\epsilon^{-1/2}(x_{i,j},x_{j,i})\beta,I\big)$
+
+where $I$ here is the 2x2 identity matrix.
+
+Let $(\widetilde{x}_{i,j},\widetilde{x}_{j,i})=\Sigma_\epsilon^{-1/2}(x_{i,j},x_{j,i})$
+
+and $\widetilde{\lambda}=\Sigma_\epsilon^{-1/2}(\lambda_{i,j},\lambda_{j,i})$
+
+The distribution for $\widetilde{\lambda}$ given $\beta$ and $\widetilde{X}$ is then
+
+$\widetilde{\lambda} \sim MVN(\widetilde{X}\beta,I)$
+
+We let the prior for $\beta$ be a general multivariate normal prior.
+
+$\beta \sim MVN(\beta_0, \Sigma_0)$
+
+Combining the two gives us the full conditional for $\beta$.
+
+$\beta|\widetilde{\lambda} \sim MVN\big((\Sigma_0^{-1}+\widetilde{X}^T\widetilde{X})^{-1}(\Sigma_0^{-1}\beta_0+\widetilde{X}^T\widetilde{\lambda}), (\Sigma_0^{-1}+\widetilde{X}^T\widetilde{X})^{-1}\big)$
+
+##Full conditional for $a$
+
+$y_{i,j}=\beta^Tx_{i,j}+a_i+b_j+\epsilon_{i,j}$
+
+$y_{i,j}-\beta^Tx_{i,j}-b_j=a_i+\epsilon_{i,j}$
+
+Let $\widetilde{y}_{i,j}=y_{i,j}-\beta^Tx_{i,j}+b_j$. For a given cell $(i,j)$, we observe that
+
+$\widetilde{y}_{i,j} \sim N(a_i,1)$
+
+Assuming $\epsilon_{i,j}$ and $\epsilon_{i,k}$ are uncorrelated for all $j,k$. Let $\widetilde{y}_j^{a_i}$ be $\widetilde{y}_{i,j}$ for a given $a_i$. Then we can write
+
+$\widetilde{y}_1^{a_i}, \widetilde{y}_2^{a_i},...,\widetilde{y}_{n-1}^{a_i} \sim N(a_i,1)$
+
+Where these are independent and identically distributed.
+
+For the prior, we must take into account the dependence between each $a_i$ and $b_i$. The joint probability is defined to be
+
+$(a_i,b_i)\sim N(0,\Sigma_{ab})$
+
+Where $\Sigma_{ab}$ is some known covariance matrix. The distribution of $a_i$ conditional on $b_i$ is also a normal distribution.
+
+$a_i|b_i \sim N(\mu_0,\sigma_0^2)$, where
+
+$\mu_0=\dfrac{\rho \sigma_a b_i}{\sigma_b}$
+
+$\sigma_0^2=\sigma_a^2(1-\rho^2)$
+
+Here $\sigma_a$ and $\sigma_b$ are the standard deviations of $a_i$ and $b_i$, respectively, and $\rho$ is the correlation between $a_i$ and $b_i$.
+
+Combining information from the data and the prior, we can find the posterior distribution of $a_i$ for a given row $i$. This clearly turns out to be a normal-normal model, where the posterior distribution for $a_i$ is 
+
+$a_i|\widetilde{y}_1^{a_i},\widetilde{y}_2^{a_i},...,\widetilde{y}_{n-1}^{a_i} \sim N(\mu, \sigma^2)$
+
+where
+
+$\mu=\dfrac{\frac{\mu_0}{\sigma_0^2}+(n-1)\bar{\widetilde{y}}^{a_i}}{\frac{1}{\sigma_0^2}+n-1}$
+
+$\sigma^2=\dfrac{1}{\frac{1}{\sigma_0^2}+n-1}$
+
+Since the conditional distribution for each $a_i$ is a normal distribution, we can sample from the vector $a$ using just a multivariate normal distribution.
+
+##Full conditional for $b$
+The full conditional for $b$ will look similar to $a$. We now define $\widetilde{y}_{i,j}$ to be
+
+$y_{i,j}-\beta^Tx_{i,j}-a_i$
+
+and each $\widetilde{y}_{i,j}$ is distributed normally
+
+$\widetilde{y}_1^{b_i}, \widetilde{y}_2^{b_i},...,\widetilde{y}_{n-1}^{b_i} \sim N(b_i,1)$
+
+Where these are independent and identically distributed.
+
+Likewise, the prior for $b_i$ conditional on $a_i$ is similar to that for $a_i$. 
+
+$b_i|a_i \sim N(\mu_0,\sigma_0^2)$, where 
+
+$\mu_0=\dfrac{\rho \sigma_b a_i}{\sigma_a}$
+
+$\sigma_0^2=\sigma_b^2(1-\rho^2)$
+
+Combining the information from the prior and the likelihood, we find the full conditional of $b_i$ for a given $i$ is normally distributed with parameters
+
+$b_i|\widetilde{y}_1^{b_i},\widetilde{y}_2^{b_i},...,\widetilde{y}_{n-1}^{b_i} \sim N(\mu, \sigma^2)$
+
+where
+
+$\mu=\dfrac{\frac{\mu_0}{\sigma_0^2}+(n-1)\bar{\widetilde{y}}^{b_i}}{\frac{1}{\sigma_0^2}+n-1}$
+
+$\sigma^2=\dfrac{1}{\frac{1}{\sigma_0^2}+n-1}$
+
+Again, because the conditional distribution for each $b_i$ is normal, we can sample the vector $b$ using a multivariate normal distribution.
+
+##Full conditional for $Y$
+
+$p(Y|\beta,a,b,S)\propto p(Y|\beta,a,b)p(Y|S)$
+
+$y_{i,j}|\beta,a_i,b_j \sim N(\beta^Tx_{i,j}+a_i+b_j,1)$
+
+###Case 1: $s_{i,j}>0$
+
+$y_{i,j}$ is constrained to the interval $(a,b)$, where
+
+$a=max(y_{i,k}:s_{i,k}<s_{i,j})$
+
+$b=min(y_{i,k}:s_{i,k}>s_{i,j})$
+
+Here both $a$ and $b$ depend on $S_i$.
+
+The full conditional for each $y_{i,j}$ is then a constrained normal distribution on $(a,b)$.
+
+$\dfrac{\phi(y_{i,j}-\beta^Tx_{i,j}-a_i-b_j)}{\Phi(b-\beta^Tx_{i,j}-a_i-b_j)-\Phi(a-\beta^Tx_{i,j}-a_i-b_j)}$
+
+Where $\phi(x)$ is the standard normal pdf, and $\Phi$ is the standard normal cdf.
+
+###Case 2: $s_{i,j}=0$ and $d_i<m$
+
+$y_{i,j}$ is constrained to the interval $(a,b)$, where
+
+$a=-\infty$
+
+$b=0$
+
+The full conditional for each $y_{i,j}$ is then a constrained normal distribution on $(a,b)$.
+
+$\dfrac{\phi(y_{i,j}-\beta^Tx_{i,j}-a_i-b_j)}{\Phi(-\beta^Tx_{i,j}-a_i-b_j)}$
+
+###Case 3: $s_{i,j}=0$ and $d_i=m$
+
+$y_{i,j}$ is constrained to the interval $(a,b)$, where
+
+$a=-\infty$
+
+$b=min(y_{i,k}:s_{i,k}>0)$
+
+The full conditional for each $y_{i,j}$ is then a constrained normal distribution on $(a,b)$.
+
+$\dfrac{\phi(y_{i,j}-\beta^Tx_{i,j}-a_i-b_j)}{\Phi(b-\beta^Tx_{i,j}-a_i-b_j)}$
+

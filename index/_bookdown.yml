@@ -1,0 +1,6 @@
+book_filename: "thesis"
+chapter_name: "Chapter "
+rmd_files: ["index.Rmd", "FRN-Review.Rmd",  "Full-Conditional-Derivations.Rmd", "Thesis-Replication-Code-v7.Rmd", "Thesis-Simulation-Study-2.Rmd"]
+download: [["thesis.pdf", "PDF"], ["thesis.epub", "EPUB"], ["thesis.docx", "Word"]]
+output_dir: "../docs"
+delete_merged_file: TRUE
