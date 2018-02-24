@@ -1,0 +1,21 @@
+#Review of Hoff et al. 2013
+
+The purpose of this paper was to compare methods in handling restricted networks when conducting inference, particularly how different methods censor important features of the network. Say we have an $n$x$n$ matrix of rankings $Y$, where $Y_{i,j}$ indicates a ranking of actor $j$ by actor $i$. In the context of this paper, these rankings are friendship rankings, where actors are asked to rank other actors. These rankings need not be symmetrical, in that actor $i$ can rate actor $j$ differently than vice versa. Therefore, $Y$ represents a directed network of edges in our network. Say that in addition to this network of rankings we have data on specific actors (row/column covariates) as well as data on pairs of actors (dyadic covariates). We wish to use the available data on these actors and our observed network to infer how certain variables lead to certain rankings. Specifically, can we use actor specific or pairwise specific information to predict how actors will rank one another? This is can be modeled with regression on each entry in $Y$, where 
+
+$y_{i,j}=\beta x_{i,j}+a_i+b_j+\epsilon{i,j}$
+
+However, say that instead of receiving all the rankings in $Y$, we only receive some finite amount of them. In the case of the friendship rankings, imagine a certain actor could only rate $m$ friends at most. This would mean our data would be potentially censored. If an actor doesn't rank $m$ people for some reason, then we know his or her rankings are not censored. In other words, we know those who weren't ranked by him or her were not his or her friends. On the other hand, if the actor did in fact rank $m$ people, then we can't tell if an unranked person is indeed not a friend of the actor or is a friend who couldn't be ranked due to the restriction.
+
+With a knowledge of the limitation, i.e. the number of maximum rankings by an actor $m$, we can infer from this data what the true network of rankings, which we call $Z$, potentially looks like.
+
+1) If we observe a positive ranking, then that person is ranked.
+2) If person 1's ranking is higher than person 2's ranking, then person 1 is ranked higher than person 2.
+3) If we observe no ranking in AND the person in that row did not rank the maximum number of people, then that person is not ranked.
+
+We can use this to sample from the latent matrix $Z$ using an "FRN likelihood" in Gibbs sampler as described by the paper.
+
+Alternatively, we can simply use a "Binary likelihood" where rather than taking into account the ranks we only observe whether a rank "exists" or not. In other words, we only look for the absense or prescence of a friendship in the network, hence the binary nature.
+
+The paper uses both a simulation study and a data analysis example with child friendships networks from Head Start programs to compare these two likelihoods in their estimates of parameters. The paper found that the binary likelihood effectively censored valuable information in the ranks and led to less accurate analysis of the network.
+
+In order to replicate the research I first needed to derive the posterior distributions used in the Gibbs sampler, which I do the next part.
