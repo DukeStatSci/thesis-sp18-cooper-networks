@@ -1,0 +1,3 @@
+#Introduction
+
+In social network settings, an actor's relationships with other actors in the network can be modeled based on actor-specific and partner-specific attributes. For instance, in a friendship network, the friendship between 
